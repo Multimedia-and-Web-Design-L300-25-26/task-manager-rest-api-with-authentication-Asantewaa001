@@ -5,6 +5,16 @@ describe("Auth Routes", () => {
 
   let token;
 
+  beforeAll(async () => {
+    const User = (await import("../src/models/User.js")).default;
+    await User.deleteMany({});
+  });
+
+  afterAll(async () => {
+    const mongoose = (await import("mongoose")).default;
+    await mongoose.connection.close();
+  });
+
   it("should register a user", async () => {
     const res = await request(app)
       .post("/api/auth/register")
@@ -13,6 +23,8 @@ describe("Auth Routes", () => {
         email: "test@example.com",
         password: "123456"
       });
+
+    if (res.statusCode !== 201) console.log("Register Auth Error:", res.body);
 
     expect(res.statusCode).toBe(201);
     expect(res.body.email).toBe("test@example.com");
