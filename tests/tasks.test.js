@@ -5,6 +5,11 @@ let token;
 let taskId;
 
 beforeAll(async () => {
+  const User = (await import("../src/models/User.js")).default;
+  const Task = (await import("../src/models/Task.js")).default;
+  await User.deleteMany({});
+  await Task.deleteMany({});
+
   // Register
   await request(app)
     .post("/api/auth/register")
@@ -58,4 +63,9 @@ describe("Task Routes", () => {
     expect(Array.isArray(res.body)).toBe(true);
   });
 
+});
+
+afterAll(async () => {
+  const mongoose = (await import("mongoose")).default;
+  await mongoose.connection.close();
 });
